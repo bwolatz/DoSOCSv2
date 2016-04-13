@@ -31,6 +31,7 @@
 {0} scanproject [--project-file] (PROJECT-FILE)
 {0} scanners [-f FILE]
 {0} (--help | --version)
+{0} relation (PARENT-FILE) (CHILD-FILE)
 
 Commands:
   configtest    Check configuration
@@ -46,6 +47,8 @@ Commands:
   print         Render and print a document to standard output
   scan          Scan an archive file or directory
   scanners      List available scanners
+  relation      Stores relationship info between a given parent
+                  package and a given child package
 
 Options:
   -C, --doc-comment=COMMENT   Comment for new document (otherwise use empty
@@ -350,6 +353,14 @@ def main(sysargv=None):
         with engine.begin() as conn:
             print(render.render_document(conn, doc_id, template_file))
     
+    elif argv['relation']:
+        kwargs = {
+            'parent': argv['PARENT-FILE'],
+            'child': argv['CHILD-FILE'],
+            'comment': 'DEPENDENCY_OF'
+        }
+        with engine.begin() as conn:
+            printval = spdxdb.create_relation(conn, **kwargs)
     return 0
 
 
